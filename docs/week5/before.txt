@@ -1,31 +1,248 @@
-WEEK 5 — STATIC ANALYSIS BEFORE REFACTORING
-Target: week5/legacy_fees.py
+F401 [*] `os` imported but unused
+ --> week5\legacy_fees.py:1:8
+  |
+1 | import os
+  |        ^^
+2 | import math
+  |
+help: Remove unused import: `os`
+  |
+  - import os
+1 | import math
+  |
 
-REFERENCE RESULT FROM THE INSTRUCTOR'S LAB HANDOUT (page 5)
-The handout states that Ruff reports 16 problems:
+F401 [*] `math` imported but unused
+ --> week5\legacy_fees.py:2:8
+  |
+1 | import os
+2 | import math
+  |        ^^^^
+help: Remove unused import: `math`
+  |
+1 | import os
+  - import math
+2 |
+  |
 
-6  PLR2004  magic-value-comparison
-2  F401     unused-import
-1  ARG001   unused-function-argument
-1  B006     mutable-argument-default
-1  C901     complex-structure
-1  E711     none-comparison
-1  E712     true-false-comparison
-1  F841     unused-variable
-1  N802     invalid-function-name
-1  PLR0913  too-many-arguments
+C901 `calc` is too complex (9 > 5)
+ --> week5\legacy_fees.py:5:5
+  |
+5 | def calc(d, t, y, s, disc, extra=[]):
+  |     ^^^^
+6 |     # t: 1=student, 2=staff child, 3=scholarship
+7 |     total = 0
+  |
 
-IMPORTANT: This is the reference summary printed in the supplied lab PDF, not a
-claim that Ruff/Pylint were executed in this build environment. The environment
-used to prepare this folder did not have Ruff or Pylint installed and could not
-reach the package index. Run the commands below on the Windows machine and
-append their complete, actual terminal output here before submission.
+PLR0913 Too many arguments in function definition (6 > 5)
+ --> week5\legacy_fees.py:5:5
+  |
+5 | def calc(d, t, y, s, disc, extra=[]):
+  |     ^^^^
+6 |     # t: 1=student, 2=staff child, 3=scholarship
+7 |     total = 0
+  |
 
-PowerShell commands (from the repository root):
+PLR0917 Too many positional arguments (6 > 5)
+ --> week5\legacy_fees.py:5:5
+  |
+5 | def calc(d, t, y, s, disc, extra=[]):
+  |     ^^^^
+6 |     # t: 1=student, 2=staff child, 3=scholarship
+7 |     total = 0
+  |
 
-    ruff check week5/legacy_fees.py
-    ruff check week5/legacy_fees.py --statistics
-    pylint week5/legacy_fees.py
+ARG001 Unused function argument: `y`
+ --> week5\legacy_fees.py:5:16
+  |
+5 | def calc(d, t, y, s, disc, extra=[]):
+  |                ^
+6 |     # t: 1=student, 2=staff child, 3=scholarship
+7 |     total = 0
+  |
 
-The Pylint score is intentionally not invented. Record the score printed by
-your own installed Pylint version.
+B006 Do not use mutable data structures for argument defaults
+ --> week5\legacy_fees.py:5:34
+  |
+5 | def calc(d, t, y, s, disc, extra=[]):
+  |                                  ^^
+6 |     # t: 1=student, 2=staff child, 3=scholarship
+7 |     total = 0
+  |
+help: Replace with `None`; initialize within function
+  |
+4 |
+  - def calc(d, t, y, s, disc, extra=[]):
+5 + def calc(d, t, y, s, disc, extra=None):
+6 |     # t: 1=student, 2=staff child, 3=scholarship
+7 +     if extra is None:
+8 +         extra = []
+9 |     total = 0
+  |
+note: This is an unsafe fix and may change runtime behavior
+
+PLR2004 Magic value used in comparison, consider replacing `2` with a constant variable
+  --> week5\legacy_fees.py:11:19
+   |
+ 9 |         if t == 1:
+10 |             total = total + c["h"] * 350
+11 |         elif t == 2:
+   |                   ^
+12 |             total = total + c["h"] * 350 * 0.5
+13 |         elif t == 3:
+   |
+
+PLR2004 Magic value used in comparison, consider replacing `3` with a constant variable
+  --> week5\legacy_fees.py:13:19
+   |
+11 |         elif t == 2:
+12 |             total = total + c["h"] * 350 * 0.5
+13 |         elif t == 3:
+   |                   ^
+14 |             total = total + 0
+15 |     if total > 6000:
+   |
+
+PLR2004 Magic value used in comparison, consider replacing `6000` with a constant variable
+  --> week5\legacy_fees.py:15:16
+   |
+13 |         elif t == 3:
+14 |             total = total + 0
+15 |     if total > 6000:
+   |                ^^^^
+16 |         total = total - 200
+17 |     if s == True:
+   |
+
+E712 Avoid equality comparisons to `True`; use `s:` for truth checks
+  --> week5\legacy_fees.py:17:8
+   |
+15 |     if total > 6000:
+16 |         total = total - 200
+17 |     if s == True:
+   |        ^^^^^^^^^
+18 |         total = total + 150
+19 |     if disc != None:
+   |
+help: Replace with `s`
+   |
+16 |         total = total - 200
+   -     if s == True:
+17 +     if s:
+18 |         total = total + 150
+   |
+note: This is an unsafe fix and may change runtime behavior
+
+E711 Comparison to `None` should be `cond is not None`
+  --> week5\legacy_fees.py:19:16
+   |
+17 |     if s == True:
+18 |         total = total + 150
+19 |     if disc != None:
+   |                ^^^^
+20 |         total = total - disc
+21 |     for e in extra:
+   |
+help: Replace with `cond is not None`
+   |
+18 |         total = total + 150
+   -     if disc != None:
+19 +     if disc is not None:
+20 |         total = total - disc
+   |
+note: This is an unsafe fix and may change runtime behavior
+
+F841 Local variable `tmp` is assigned to but never used
+  --> week5\legacy_fees.py:23:5
+   |
+21 |     for e in extra:
+22 |         total = total + e
+23 |     tmp = total * 1.0
+   |     ^^^
+24 |     return total
+   |
+help: Remove assignment to unused variable `tmp`
+   |
+22 |         total = total + e
+   -     tmp = total * 1.0
+23 +     total * 1.0
+24 |     return total
+   |
+note: This is an unsafe fix and may change runtime behavior
+
+PLR2004 Magic value used in comparison, consider replacing `2` with a constant variable
+  --> week5\legacy_fees.py:31:15
+   |
+29 |     if t == 1:
+30 |         print("Student fee: " + str(x))
+31 |     elif t == 2:
+   |               ^
+32 |         print("Staff child fee: " + str(x))
+33 |     if x > 6000:
+   |
+
+PLR2004 Magic value used in comparison, consider replacing `6000` with a constant variable
+  --> week5\legacy_fees.py:33:12
+   |
+31 |     elif t == 2:
+32 |         print("Staff child fee: " + str(x))
+33 |     if x > 6000:
+   |            ^^^^
+34 |         print("High fee")
+35 |     return x
+   |
+
+N802 Function name `ProcessAll` should be lowercase
+  --> week5\legacy_fees.py:38:5
+   |
+38 | def ProcessAll(students):
+   |     ^^^^^^^^^^
+39 |     for st in students:
+40 |         if st["type"] == 1:
+   |
+
+PLR2004 Magic value used in comparison, consider replacing `2` with a constant variable
+  --> week5\legacy_fees.py:42:26
+   |
+40 |         if st["type"] == 1:
+41 |             fee = calc(st["courses"], 1, 2026, st["summer"], None)
+42 |         if st["type"] == 2:
+   |                          ^
+43 |             fee = calc(st["courses"], 2, 2026, st["summer"], None)
+44 |         print(st["name"], fee)
+   |
+
+Found 17 errors.
+[*] 2 fixable with `--fix` (4 unsafe fixes available with `--fix --unsafe-fixes`).
+6	PLR2004	[ ] magic-value-comparison
+2	F401   	[*] unused-import
+1	C901   	[ ] complex-structure
+1	N802   	[ ] invalid-function-name
+1	B006   	[ ] mutable-argument-default
+1	E711   	[ ] none-comparison
+1	PLR0913	[ ] too-many-arguments
+1	PLR0917	[ ] too-many-positional-arguments
+1	E712   	[ ] true-false-comparison
+1	ARG001 	[ ] unused-function-argument
+1	F841   	[ ] unused-variable
+Found 17 errors.
+[*] 2 fixable with `--fix` (4 unsafe fixes available with `--fix --unsafe-fixes`).
+************* Module legacy_fees
+week5\legacy_fees.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+week5\legacy_fees.py:5:0: C0116: Missing function or method docstring (missing-function-docstring)
+week5\legacy_fees.py:5:0: W0102: Dangerous default value [] as argument (dangerous-default-value)
+week5\legacy_fees.py:5:0: R0913: Too many arguments (6/5) (too-many-arguments)
+week5\legacy_fees.py:5:0: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
+week5\legacy_fees.py:17:7: C0121: Comparison 's == True' should be 's is True' if checking for the singleton value True, or 's' if testing for truthiness (singleton-comparison)
+week5\legacy_fees.py:19:7: C0121: Comparison 'disc != None' should be 'disc is not None' (singleton-comparison)
+week5\legacy_fees.py:5:15: W0613: Unused argument 'y' (unused-argument)
+week5\legacy_fees.py:23:4: W0612: Unused variable 'tmp' (unused-variable)
+week5\legacy_fees.py:27:0: C0116: Missing function or method docstring (missing-function-docstring)
+week5\legacy_fees.py:38:0: C0116: Missing function or method docstring (missing-function-docstring)
+week5\legacy_fees.py:38:0: C0103: Function name "ProcessAll" doesn't conform to snake_case naming style (invalid-name)
+week5\legacy_fees.py:44:26: E0606: Possibly using variable 'fee' before assignment (possibly-used-before-assignment)
+week5\legacy_fees.py:1:0: W0611: Unused import os (unused-import)
+week5\legacy_fees.py:2:0: W0611: Unused import math (unused-import)
+
+------------------------------------------------------------------
+Your code has been rated at 4.86/10 (previous run: 4.86/10, +0.00)
+
