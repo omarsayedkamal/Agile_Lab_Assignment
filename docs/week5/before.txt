@@ -1,0 +1,31 @@
+WEEK 5 — STATIC ANALYSIS BEFORE REFACTORING
+Target: week5/legacy_fees.py
+
+REFERENCE RESULT FROM THE INSTRUCTOR'S LAB HANDOUT (page 5)
+The handout states that Ruff reports 16 problems:
+
+6  PLR2004  magic-value-comparison
+2  F401     unused-import
+1  ARG001   unused-function-argument
+1  B006     mutable-argument-default
+1  C901     complex-structure
+1  E711     none-comparison
+1  E712     true-false-comparison
+1  F841     unused-variable
+1  N802     invalid-function-name
+1  PLR0913  too-many-arguments
+
+IMPORTANT: This is the reference summary printed in the supplied lab PDF, not a
+claim that Ruff/Pylint were executed in this build environment. The environment
+used to prepare this folder did not have Ruff or Pylint installed and could not
+reach the package index. Run the commands below on the Windows machine and
+append their complete, actual terminal output here before submission.
+
+PowerShell commands (from the repository root):
+
+    ruff check week5/legacy_fees.py
+    ruff check week5/legacy_fees.py --statistics
+    pylint week5/legacy_fees.py
+
+The Pylint score is intentionally not invented. Record the score printed by
+your own installed Pylint version.
